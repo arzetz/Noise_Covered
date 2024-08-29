@@ -1,0 +1,23 @@
+###
+GET http://localhost:8080/people
+
+###
+GET http://localhost:8080/compositions
+
+###
+POST http://localhost:8080/compositions
+content-type: application/json
+
+{
+    "Name": "Never fade agay",
+    "Author": "Otkaznik",
+    "Album": "Warya Music",
+    "Genre": "Punk Rock",
+    "Price": 4500
+}
+
+###
+GET http://localhost:8080/basket
+
+###
+POST http://localhost:8080/compositions/3
