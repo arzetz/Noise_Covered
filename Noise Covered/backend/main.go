@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/noize_covered/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -48,6 +49,7 @@ func main() {
 		if err := db.Find(&basket); err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Items not found"})
 		}
+		c.JSON(http.StatusOK, basket)
 	})
 
 	router.GET("/compositions", func(c *gin.Context) {
@@ -91,6 +93,7 @@ func main() {
 			return
 		}
 		db.AutoMigrate(&models.Basket{})
+		token := uuid.New().String()
 		basket := models.Basket{
 			CompositionID: composition.ID, //  Заполни  поле  CompositionID
 			Name:          composition.Name,

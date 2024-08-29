@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type User struct {
 	gorm.Model
@@ -19,8 +23,9 @@ type Composition struct {
 }
 
 type Basket struct {
-	gorm.Model
 	CompositionID uint `gorm:"foreignKey:CompositionID;references:ID"`
+	CreatedAt     time.Time
+	ExpiresAt     time.Time
 	Name          string
 	Price         uint
 	Quantity      uint
