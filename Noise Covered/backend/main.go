@@ -5,19 +5,25 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	db "github.com/noize_covered/database"
+	md "github.com/noize_covered/middleware"
 	"github.com/noize_covered/models"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
-var db *gorm.DB
-
 func main() {
-	dsn := "arzetz:8499k8499k@tcp(127.0.0.1:3306)/noize_covered?charset=utf8mb4&parseTime=True&loc=Local"
-	db, _ = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	router := gin.Default()
+	db := db.GetDB()
 	db.AutoMigrate(&models.User{}, &models.Composition{}, &models.Basket{}, &models.Order{})
+
+	router.POST("/", func(c *gin.Context) {
+		var user models.User
+		db.Create(&user)
+		basket := models.Basket{
+			UserID: user.ID,
+		}
+		db.Create(&basket)
+		md.SessionMiddleware(c, user)
+	})
 
 	router.GET("/people", func(c *gin.Context) {
 		var users []models.User
@@ -26,7 +32,6 @@ func main() {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 			return
 		}
-
 		// Ответ в формате JSON
 		c.JSON(http.StatusOK, users)
 	})
@@ -93,7 +98,6 @@ func main() {
 			return
 		}
 		db.AutoMigrate(&models.Basket{})
-		token := uuid.New().String()
 		basket := models.Basket{
 			CompositionID: composition.ID, //  Заполни  поле  CompositionID
 			Name:          composition.Name,

@@ -3,26 +3,26 @@ package middleware
 import (
 	"net/http"
 	"time"
-	"github.com/noize_covered/models"
-	"github.com/noize_covered/main"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	db "github.com/noize_covered/database"
+	"github.com/noize_covered/models"
 )
 
-var db *gorm.DB
-db.AutoMigrate(&models.Session{})
+func SessionMiddleware(c *gin.Context, user models.User) {
+	db := db.GetDB()
+	db.AutoMigrate(&models.Session{})
 
-func sessionMiddleware(c *gin.Context) {
 	token, exists := c.Get("session_token")
 	if !exists {
-		token = uuid.New().String()
-		c.Set("session_token", token)
+		tokenStr := uuid.New().String()
+		c.Set("session_token", tokenStr)
 		c.Set("session_expire", time.Now().Add(time.Hour))
 
-		session := Session{
-			SessionID: token,
-			UserID:    c.ClientIP(),
-			Token:     token,
+		session := models.Session{
+			UserID:    user.ID,
+			Token:     tokenStr,
 			ExpiresAt: time.Now().Add(time.Hour),
 		}
 
@@ -33,10 +33,10 @@ func sessionMiddleware(c *gin.Context) {
 			c.Set("session_token", nil)
 			c.Set("session_expire", nil)
 
-			clearBasket(token)
+			//clearBasket(token)
 
-			db.Where("token = ?", token).Delete(&Session{})
-
+			db.Where("token = ?", token).Delete(&models.Session{})
+			db.Where("id = ?", user.ID).Delete(&models.User{})
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Session expired"})
 			c.Abort()
 			return

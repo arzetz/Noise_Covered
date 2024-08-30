@@ -10,14 +10,14 @@ type User struct {
 	gorm.Model
 	Surname string
 	Name    string
-	Email   string `gorm:"unique"`
+	Email   string
 }
 
 type Session struct {
 	gorm.Model
-	UserID    string
+	UserID    uint `gorm:"foreignKey:UserID;references:ID"`
 	Token     string
-	ExpiresAT time.Time
+	ExpiresAt time.Time
 }
 
 type Composition struct {
@@ -31,7 +31,7 @@ type Composition struct {
 
 type Basket struct {
 	CompositionID uint `gorm:"foreignKey:CompositionID;references:ID"`
-	UserID        string
+	UserID        uint `gorm:"foreignKey:UserID;references:ID"`
 	Name          string
 	Price         uint
 	Quantity      uint
