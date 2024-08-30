@@ -36,6 +36,7 @@ type Basket struct {
 	Name          string
 	Price         uint
 	Quantity      uint
+	Token         string
 }
 
 type Order struct {

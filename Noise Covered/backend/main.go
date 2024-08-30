@@ -13,16 +13,16 @@ import (
 func main() {
 	router := gin.Default()
 	db := db.GetDB()
-	db.AutoMigrate(&models.User{}, &models.Composition{}, &models.Basket{}, &models.Order{})
+	db.AutoMigrate(&models.User{}, &models.Composition{}, &models.Basket{}, &models.Order{}, &models.Session{})
 
 	router.POST("/", func(c *gin.Context) {
-		var user models.User
-		db.Create(&user)
-		basket := models.Basket{
-			UserID: user.ID,
-		}
-		db.Create(&basket)
-		md.SessionMiddleware(c, user, basket)
+		md.CreateNewSession(c)
+		md.CheckSession(c)
+	})
+
+	router.GET("/", func(c *gin.Context) {
+		token, _ := c.Cookie("sessionCookie")
+		c.JSON(http.StatusOK, token)
 	})
 
 	router.GET("/people", func(c *gin.Context) {
@@ -51,9 +51,8 @@ func main() {
 
 	router.GET("/basket", func(c *gin.Context) {
 		var basket []models.Basket
-		if err := db.Find(&basket); err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Items not found"})
-		}
+		cookie, _ := c.Cookie("sessionCookie")
+		db.Where("token = ?", cookie).Find(&basket)
 		c.JSON(http.StatusOK, basket)
 	})
 
@@ -92,17 +91,24 @@ func main() {
 
 	router.POST("/compositions/:compositionID", func(c *gin.Context) {
 		compositionID := c.Param("compositionID")
+		var user models.User
 		var composition models.Composition
+		cookie, _ := c.Cookie("sessionCookie")
 		if err := db.First(&composition, compositionID).Error; err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Composition not found"})
 			return
 		}
-		db.AutoMigrate(&models.Basket{})
+		if err := db.Where("token = ?", cookie).First(&user).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Composition not found"})
+			return
+		}
 		basket := models.Basket{
 			CompositionID: composition.ID, //  Заполни  поле  CompositionID
 			Name:          composition.Name,
 			Price:         composition.Price,
 			Quantity:      1,
+			Token:         cookie,
+			UserID:        user.ID,
 		}
 		db.Create(&basket)
 	})

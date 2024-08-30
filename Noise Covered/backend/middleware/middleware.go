@@ -10,41 +10,25 @@ import (
 	"github.com/noize_covered/models"
 )
 
-func SessionMiddleware(c *gin.Context, user models.User, basket models.Basket) {
+func CheckSession(c *gin.Context) {
 	db := db.GetDB()
 	db.AutoMigrate(&models.Session{})
 
-	token, exists := c.Get("session_token")
-	if !exists {
-		tokenStr, err := generateToken()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		c.Set("session_token", tokenStr)
-		c.Set("session_expire", time.Now().Add(time.Hour))
-
-		session := models.Session{
-			UserID:    user.ID,
-			Token:     tokenStr,
-			ExpiresAt: time.Now().Add(time.Hour),
-		}
-		db.Model(&user).Update("Token", tokenStr)
-		db.Model(&basket).Update("Token", tokenStr)
-		db.Create(&session)
-		c.SetCookie("sessionCookie", session.Token, 3600, "/", "http://localhost:8080", false, true)
+	token, err := c.Cookie("sessionCookie")
+	if err != nil {
+		CreateNewSession(c)
 	} else {
-		expireTime, ok := c.Get("session_expire")
-		if !ok || time.Now().After(expireTime.(time.Time)) {
-			c.Set("session_token", nil)
-			c.Set("session_expire", nil)
-
-			//clearBasket(token)
-
-			db.Where("token = ?", token).Delete(&models.Session{})
-			db.Where("id = ?", user.ID).Delete(&models.User{})
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Session expired"})
+		if !validateSession(token) {
+			var session models.Session
+			if err := db.Where("token = ?", token).First(&session).Error; err != nil {
+				// Обработать ошибку, если сессия не найдена
+				c.JSON(http.StatusNotFound, gin.H{"error": "Session not found"})
+				return
+			}
+			c.JSON(http.StatusOK, &models.Session{})
+			clearSession(token)
+			CreateNewSession(c)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Session expired, new one created"})
 			c.Abort()
 			return
 		}
@@ -53,10 +37,47 @@ func SessionMiddleware(c *gin.Context, user models.User, basket models.Basket) {
 	c.Next()
 }
 
-func generateToken() (string, error) {
+func GenerateToken() (string, error) {
 	token, err := uuid.NewRandom()
 	if err != nil {
 		return "", err
 	}
 	return token.String(), nil
+}
+
+func validateSession(token string) bool {
+	db := db.GetDB()
+	var session models.Session
+	if err := db.Where("token = ?", token).First(&session).Error; err != nil {
+		return false
+	}
+	if time.Now().After(session.ExpiresAt) {
+		return false
+	}
+
+	return true
+}
+
+func clearSession(token string) {
+	// TODO: Очистить корзину, если нужно.
+	db := db.GetDB()
+	db.Where("token = ?", token).Delete(&models.Session{})
+	db.Where("token = ?", token).Delete(&models.User{})
+	db.Where("token = ?", token).Delete(&models.Basket{})
+}
+
+func CreateNewSession(c *gin.Context) {
+	db := db.GetDB()
+	token, _ := GenerateToken()
+	c.SetCookie("sessionCookie", token, 3600, "/", "", false, true)
+	user := models.User{
+		Token: token,
+	}
+	db.Create(&user)
+	session := models.Session{
+		UserID:    user.ID,
+		Token:     token,
+		ExpiresAt: time.Now().Add(time.Hour),
+	}
+	db.Create(&session)
 }
