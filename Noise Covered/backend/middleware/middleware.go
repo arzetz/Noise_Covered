@@ -10,13 +10,18 @@ import (
 	"github.com/noize_covered/models"
 )
 
-func SessionMiddleware(c *gin.Context, user models.User) {
+func SessionMiddleware(c *gin.Context, user models.User, basket models.Basket) {
 	db := db.GetDB()
 	db.AutoMigrate(&models.Session{})
 
 	token, exists := c.Get("session_token")
 	if !exists {
-		tokenStr := uuid.New().String()
+		tokenStr, err := generateToken()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
 		c.Set("session_token", tokenStr)
 		c.Set("session_expire", time.Now().Add(time.Hour))
 
@@ -25,8 +30,10 @@ func SessionMiddleware(c *gin.Context, user models.User) {
 			Token:     tokenStr,
 			ExpiresAt: time.Now().Add(time.Hour),
 		}
-
+		db.Model(&user).Update("Token", tokenStr)
+		db.Model(&basket).Update("Token", tokenStr)
 		db.Create(&session)
+		c.SetCookie("sessionCookie", session.Token, 3600, "/", "http://localhost:8080", false, true)
 	} else {
 		expireTime, ok := c.Get("session_expire")
 		if !ok || time.Now().After(expireTime.(time.Time)) {
@@ -44,4 +51,12 @@ func SessionMiddleware(c *gin.Context, user models.User) {
 	}
 
 	c.Next()
+}
+
+func generateToken() (string, error) {
+	token, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
+	}
+	return token.String(), nil
 }

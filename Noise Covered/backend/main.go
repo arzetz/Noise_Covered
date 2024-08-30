@@ -22,7 +22,7 @@ func main() {
 			UserID: user.ID,
 		}
 		db.Create(&basket)
-		md.SessionMiddleware(c, user)
+		md.SessionMiddleware(c, user, basket)
 	})
 
 	router.GET("/people", func(c *gin.Context) {

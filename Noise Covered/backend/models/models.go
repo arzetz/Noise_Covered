@@ -11,6 +11,7 @@ type User struct {
 	Surname string
 	Name    string
 	Email   string
+	Token   string
 }
 
 type Session struct {
