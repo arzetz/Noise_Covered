@@ -8,7 +8,7 @@ function HomePage() {
       <Container className="centered-container main-header">
         <Row>
           <Col lg={12} className="main-header">
-            <span className="main">NOISE|COVE<span className="RED">RED</span></span>
+            <span className="main">NOISE | COVE<span className="RED">RED</span></span>
           </Col>
           </Row>
       </Container>
@@ -18,22 +18,30 @@ function HomePage() {
         <Row>
           <Col className="my-nav">
             <Nav>
-              <Nav.Item className="mx-5">
-                <Nav.Link href="#"><span className="menu">ГЛАВНАЯ</span></Nav.Link>
+              <Nav.Item>
+                <Nav.Link href="/"><span className="menu">ГЛАВНАЯ</span></Nav.Link>
               </Nav.Item>
-              <Nav.Item className="mx-5">
-                <Nav.Link href="#"><span className="menu">О НАС</span></Nav.Link>
+              <Nav.Item>
+                <Nav.Link href="/lol"><span className="menu">О НАС</span></Nav.Link>
               </Nav.Item>
-              <Nav.Item className="mx-5">
+              <Nav.Item>
                 <Nav.Link href="#"><span className="menu">КАТАЛОГ</span></Nav.Link>
               </Nav.Item>
-              <Nav.Item className="mx-5">
+              <Nav.Item>
                 <Nav.Link href="#"><span className="menu">КОНТАКТЫ</span></Nav.Link>
               </Nav.Item>
             </Nav>
-          </Col>
+          </Col>     
         </Row>
       </Container>
+      <Container>
+        <Row>
+          <Col>
+          <span className="phone-text">МАГАЗИН ВИНИЛОВЫХ ПЛАСТИНОК</span>
+          </Col>
+          </Row>
+      </Container>
+
     </div>
   );
 }

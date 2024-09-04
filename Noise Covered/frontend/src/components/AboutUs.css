@@ -1,0 +1,8 @@
+.background-container_about_us {
+    background-image: url("../images/background_about_us.png"); /* Путь к фоновой картинке */
+    background-size: cover; /*  Покрытие всей области */
+    background-position: center; /*  Центрирование изображения */
+    background-repeat: no-repeat; /*  Без повторений */
+    height: 100vh; /*  Занимаем всю высоту  */
+  }
+  
