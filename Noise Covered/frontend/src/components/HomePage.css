@@ -1,0 +1,66 @@
+@font-face {
+  font-family: 'Dela Gothic One'; /* Задайте имя для вашего шрифта */
+  src: url('../fonts/DelaGothicOne-Regular.ttf');
+  font-weight: 400; /* Определите вес шрифта */
+  font-style: normal;}
+
+span.main{
+font-size: 96px;
+color: transparent;
+-webkit-text-stroke-width: 2px;
+-webkit-text-stroke-color: white;
+font-family: 'Dela Gothic One';
+}
+
+span.RED{
+  color: #AC0000;
+}
+
+.background-container {
+  background-image: url('../images/dark_home_background.png'); /* Путь к фоновой картинке */
+  background-size: cover; /*  Покрытие всей области */
+  background-position: center; /*  Центрирование изображения */
+  background-repeat: no-repeat; /*  Без повторений */
+  height: 100vh; /*  Занимаем всю высоту  */
+}
+
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; 
+}
+
+.main-header{
+  padding-top: 13vh;
+
+}
+
+@media (max-width: 835px) { /*  Измените  значение, если  нужно */
+  .my-nav { 
+    display: none; 
+  }
+}
+
+
+span.menu{
+  color: white;
+  font-size: 30px;
+  font-family: 'Dela Gothic One'; /* Выберите желаемый шрифт */
+}
+.my-nav .nav-link {
+  margin-top: 15vh;
+} 
+
+@media (max-width: 1400px) { span.main{
+  font-size: 76px;
+  color: transparent;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: white;
+  font-family: 'Dela Gothic One';
+  }
+  span.menu{
+    color: white;
+    font-size: 26px;
+    font-family: 'Dela Gothic One'; /* Выберите желаемый шрифт */
+  }}
