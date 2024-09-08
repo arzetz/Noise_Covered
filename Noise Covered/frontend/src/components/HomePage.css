@@ -108,3 +108,7 @@ span.menu:hover{
   }
 }
 
+@media (max-width: 800px){
+  span.main {
+    font-size: 75px;
+  }}
