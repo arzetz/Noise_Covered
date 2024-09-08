@@ -1,3 +1,20 @@
+@font-face {
+  font-family: Corvetta;
+  src: url("../fonts/Corvetta.ttf");
+}
+
+@font-face {
+  font-family: "Karton"; /* Задайте имя для вашего шрифта */
+  src: url("../fonts/Karton.ttf");
+  font-weight: 400; /* Определите вес шрифта */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "firenight_regular";
+  src: url("../fonts/firenight_regular.otf");
+}
+
 .background-container_about_us {
     background-image: url("../images/background_about_us.png"); /* Путь к фоновой картинке */
     background-size: cover; /*  Покрытие всей области */
@@ -6,3 +23,103 @@
     height: 100vh; /*  Занимаем всю высоту  */
   }
   
+  /* Начальное состояние: прозрачность 1 (видимый) */
+/* Конечное состояние: прозрачность 0 (исчезновение) */
+.fade-out {
+  transition: opacity 0.5s ease-out; /* Переход с анимацией */
+  opacity: 0;
+}
+
+.fade-out-hidden {
+  display: none;
+}
+
+span{
+  color: white;
+  white-space: pre-wrap; /* Сохраняет переносы строк и пробелы */
+
+}
+
+.about_us_container{
+  text-align: center;
+  padding-top: 14vh;
+}
+
+.about_us_container_centered{
+  text-align: center;
+  padding-top: 40vh;
+}
+
+.custom-font1{
+font-family: Corvetta;
+}
+
+.custom-font2{
+  font-family: Karton;
+}
+
+.custom-font3{
+  font-family: firenight_regular;
+  font-size: 45px;
+}
+
+@media (min-width: 1600px){
+  .about_us_container{
+    max-width: 1600px !important;}
+    .custom-font1{
+      font-size: 80px;
+      }
+  .custom-font2{
+    font-size: 45px;
+  }
+  .custom-font3{
+    font-size: 45px;
+  }
+}
+
+@media (max-width: 1600px){
+  .about_us_container{
+    max-width: 1600px !important;
+    padding-top: 20vh;}
+    .custom-font1{
+      font-size: 45px;
+      }
+  .custom-font2{
+    font-size: 35px;
+  }
+  .custom-font3{
+    font-size: 36px;
+  }
+}
+
+
+@media (max-width: 1400px){
+  .about_us_container{
+    max-width: 1300px !important;
+    padding-top: 25vh;
+  }
+  .custom-font2{
+    font-size: 28px;
+  }
+  .custom-font3{
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 1000px){
+  .about_us_container{
+    max-width: 1300px !important;
+  }
+  .custom-font2{
+    font-size: 22px;
+  }
+  .custom-font3{
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 800px){
+  .about_us_container{
+    max-width: 450px !important;
+  }
+}
